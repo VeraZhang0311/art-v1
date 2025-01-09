@@ -55,7 +55,7 @@ class AuthorRecognitionPlugin {
         if (info.key === "f") {
           response.accuracy = trial.is_true_author ? 1 : -1;
         } else if (info.key === "j") {
-          response.accuracy = trial.is_true_author ? 0 : 1;
+          response.accuracy = 0;
         }
 
         // End the trial
