@@ -1,4 +1,4 @@
-import { initJsPsych, ParameterType } from "jspsych";
+import { ParameterType } from "jspsych";
 
 const info = {
   name: "author-recognition",
@@ -21,7 +21,19 @@ class AuthorRecognitionPlugin {
 
   trial(display_element, trial) {
     // Display the author name
-    display_element.innerHTML = `<div style="font-size: 24px; text-align: center; margin: 50px;">${trial.author_name}</div>`;
+    display_element.innerHTML = display_element.innerHTML = `
+      <div style="
+        font-size: 24px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      ">
+        ${trial.author_name}
+      </div>
+    `;
 
     // Set up response object
     let response = {
