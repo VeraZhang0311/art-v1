@@ -6,40 +6,15 @@ export default class InstructionScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("background", "assets/images/library.jpg"); // 加载背景图
+    this.load.image("background", "assets/images/library.jpg");
+    this.load.image("welcome", "assets/images/welcome.png");
   }
 
   create() {
     // 添加背景
     this.add.image(400, 300, "background").setScale(1);
 
-    // 显示说明文字
-    this.add.text(400, 250, "Welcome to the Author Recognition Challenge！\n\nPress the Button to get started!", {
-        fontSize: "24px",
-        color: "#ffffff",
-        align: "center",
-        fontStyle: "bold",
-      }).setOrigin(0.5);
-      
-      // 动态光晕文字
-      const glowingText = this.add.text(400, 250, "Welcome to the Author Recognition Challenge！\n\nPress the Button to get started!", {
-        fontSize: "24px",
-        color: "#ffffff",
-        align: "center",
-        fontStyle: "bold",
-      }).setOrigin(0.5)
-        .setShadow(0, 0, "#ffe384", 20, true, true);
-      
-      // 光晕动态动画
-      this.tweens.add({
-        targets: glowingText.style,
-        shadowBlur: { from: 0, to: 50 }, // 动态调整模糊半径
-        duration: 5000, // 每次动画的时长
-        ease: "Sine.easeInOut", // 使用平滑过渡效果
-        yoyo: true, // 动画往返
-        repeat: 1, // 无限循环
-      });
-      
+    this.add.image(400, 250, "welcome");
 
     // 创建按钮背景
     const graphics = this.add.graphics();
