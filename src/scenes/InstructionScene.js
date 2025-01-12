@@ -64,14 +64,15 @@ export default class InstructionScene extends Phaser.Scene {
 
       // Instructions text
       const instructions = [
+        "",
         "In this challenge, you will see a bunch of names down the page. Some of them are authors of books, and some of them are not.",
         "",
         "Your task is to identify the real author names from the fictitious names as precisely and quickly as possible.",
         "",
-        "Select 'Author' for names that you KNOW FOR SURE are authors;",
-        "select 'Do not know' if you don't recognize the name.",
+        "Press the 'F' key for names that you KNOW FOR SURE are authors;",
+        "Press the 'J' key if you don't recognize the name.",
         "",
-        "You should only select 'Author' for those names about which you are ABSOLUTELY CERTAIN or else you will lose a point.",
+        "You should only press 'F' for those names about which you are ABSOLUTELY CERTAIN or else you will lose a point.",
         "",
         "Press CONTINUE to begin the challenge.",
       ];
@@ -105,7 +106,7 @@ export default class InstructionScene extends Phaser.Scene {
 
       // Function to show the CONTINUE button
       const showContinueButton = () => {
-        const continueButton = this.add.text(400, 400, "CONTINUE", {
+        const continueButton = this.add.text(400, 430, "CONTINUE", {
           fontSize: "24px",
           color: "#ffffff",
           backgroundColor: "#4CAF50",
