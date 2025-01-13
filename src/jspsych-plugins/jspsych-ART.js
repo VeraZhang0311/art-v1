@@ -1,91 +1,64 @@
-import { ParameterType } from "jspsych";
-
 const info = {
   name: "author-recognition",
   parameters: {
     author_name: {
-      type: ParameterType.STRING,
-      default: '',
+      type: "string",
+      default: "",
     },
     is_true_author: {
-      type: ParameterType.BOOL,
+      type: "boolean",
       default: false,
     },
   },
 };
 
 class AuthorRecognitionPlugin {
-  constructor(jsPsych) {
-    this.jsPsych = jsPsych;
-  }
-
-  trial(display_element, trial) {
-    // Display the author name
-    display_element.innerHTML = display_element.innerHTML = `
-      <div style="
-        font-size: 24px;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-      ">
-        ${trial.author_name}
-      </div>
-    `;
-
-    // Set up response object
-    let response = {
+  constructor() {
+    this.response = {
       rt: null,
       key: null,
       accuracy: null,
     };
-
-    // Define valid keys
-    const valid_keys = ["f", "j"];
-
-    // Handle keyboard responses
-    const keyboardListener = this.jsPsych.pluginAPI.getKeyboardResponse({
-      callback_function: (info) => {
-        response.rt = info.rt;
-        response.key = info.key;
-
-        // Compute accuracy
-        if (info.key === "f") {
-          response.accuracy = trial.is_true_author ? 1 : -1;
-        } else if (info.key === "j") {
-          response.accuracy = 0;
-        }
-
-        // End the trial
-        this.endTrial(display_element, trial, response, keyboardListener);
-      },
-      valid_responses: valid_keys,
-      rt_method: "performance",
-      persist: false,
-      allow_held_key: false,
-    });
   }
 
-  endTrial(display_element, trial, response, keyboardListener) {
-    // Cancel keyboard listener
-    this.jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+  trial(scene, trial, onComplete) {
+    // Display the author name using Phaser
+    const authorText = scene.add.text(400, 300, trial.author_name, {
+      fontSize: "32px",
+      color: "#ffffff",
+      fontStyle: "bold",
+      align: "center",
+    }).setOrigin(0.5);
 
-    // Clear display
-    display_element.innerHTML = "";
+    // Start listening for keyboard responses
+    const startTime = Date.now();
+    const validKeys = ["f", "j"];
+    const handleKeyPress = (event) => {
+      if (validKeys.includes(event.key)) {
+        // Stop listening to input
+        scene.input.keyboard.off("keydown", handleKeyPress);
 
-    // Package trial data
-    const trial_data = {
-      rt: response.rt,
-      key: response.key,
-      accuracy: response.accuracy,
-      author_name: trial.author_name,
-      is_true_author: trial.is_true_author,
+        // Compute response data
+        this.response.rt = Date.now() - startTime;
+        this.response.key = event.key;
+        this.response.accuracy =
+          event.key === "f"
+            ? trial.is_true_author
+              ? 1
+              : -1
+            : 0;
+
+        // Remove the author text
+        authorText.destroy();
+
+        // Call the callback to end the trial
+        if (onComplete) {
+          onComplete(this.response);
+        }
+      }
     };
 
-    // Finish the trial
-    this.jsPsych.finishTrial(trial_data);
+    scene.input.keyboard.on("keydown", handleKeyPress);
   }
 }
 
