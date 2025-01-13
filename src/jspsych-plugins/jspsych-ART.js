@@ -13,12 +13,14 @@ const info = {
 };
 
 class AuthorRecognitionPlugin {
-  constructor() {
-    this.response = {
-      rt: null,
-      key: null,
-      accuracy: null,
-    };
+  constructor(jsPsych) {
+    this.jsPsych = jsPsych; // Store the jsPsych instance
+    this.trialCount = 0; // Track completed trials
+    this.totalTrials = 0; // Total number of trials
+  }
+
+  setTotalTrials(total) {
+    this.totalTrials = total; // Set the total number of trials
   }
 
   trial(scene, trial, onComplete) {
@@ -30,35 +32,48 @@ class AuthorRecognitionPlugin {
       align: "center",
     }).setOrigin(0.5);
 
-    // Start listening for keyboard responses
+    // Handle keyboard responses
     const startTime = Date.now();
     const validKeys = ["f", "j"];
     const handleKeyPress = (event) => {
       if (validKeys.includes(event.key)) {
-        // Stop listening to input
+        // Stop listening for input
         scene.input.keyboard.off("keydown", handleKeyPress);
 
         // Compute response data
-        this.response.rt = Date.now() - startTime;
-        this.response.key = event.key;
-        this.response.accuracy =
-          event.key === "f"
-            ? trial.is_true_author
-              ? 1
-              : -1
-            : 0;
+        const response = {
+          rt: Date.now() - startTime,
+          key: event.key,
+          accuracy: event.key === "f" ? (trial.is_true_author ? 1 : -1) : 0,
+        };
 
-        // Remove the author text
+        // Push trial data directly to jsPsych
+        this.jsPsych.data.get().push({
+          author_name: trial.author_name,
+          is_true_author: trial.is_true_author,
+          rt: response.rt,
+          key: response.key,
+          accuracy: response.accuracy,
+        });
+
+        // Remove author text
         authorText.destroy();
 
-        // Call the callback to end the trial
+        // Trigger callback to end trial
         if (onComplete) {
-          onComplete(this.response);
+          onComplete(response);
         }
       }
     };
 
+    // Listen for key presses
     scene.input.keyboard.on("keydown", handleKeyPress);
+  }
+
+  saveData(filename = "author_recognition_data.csv") {
+    // Save all data to a CSV file
+    this.jsPsych.data.get().localSave("csv", filename);
+    console.log(`Data saved as ${filename}`);
   }
 }
 
