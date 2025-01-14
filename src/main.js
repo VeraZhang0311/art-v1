@@ -1,18 +1,18 @@
 import Phaser from "phaser";
-import InstructionScene from "./scenes/InstructionScene"; // 导入 InstructionScene
+import InstructionScene from "./scenes/InstructionScene"; 
 import TrialScene from "./scenes/TrialScene";
 import EndScene from "./scenes/EndScene";
 
 const config = {
-  type: Phaser.AUTO, // 自动选择渲染模式
-  width: 800, // 游戏画布宽度
-  height: 600, // 游戏画布高度
-  parent: "game-container", // Phaser 绑定到的 HTML 容器
-  scene: [InstructionScene, TrialScene, EndScene], // 加载 InstructionScene
+  type: Phaser.AUTO, // auto render mode
+  width: 800, 
+  height: 600,
+  parent: "game-container", // bond phaser to its container
+  scene: [InstructionScene, TrialScene, EndScene], 
   scale: {
-    mode: Phaser.Scale.FIT, // 自适应屏幕
-    autoCenter: Phaser.Scale.CENTER_BOTH, // 居中画布
+    mode: Phaser.Scale.FIT, // autofit
+    autoCenter: Phaser.Scale.CENTER_BOTH,
   },
 };
 
-const game = new Phaser.Game(config); // 初始化 Phaser 游戏
+const game = new Phaser.Game(config);
