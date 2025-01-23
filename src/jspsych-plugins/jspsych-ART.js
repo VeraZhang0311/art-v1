@@ -1,14 +1,12 @@
-import { ParameterType } from "jspsych";
-
 const info = {
   name: "author-recognition",
   parameters: {
     author_name: {
-      type: ParameterType.STRING,
-      default: '',
+      type: "string",
+      default: "",
     },
     is_true_author: {
-      type: ParameterType.BOOL,
+      type: "boolean",
       default: false,
     },
   },
@@ -16,76 +14,66 @@ const info = {
 
 class AuthorRecognitionPlugin {
   constructor(jsPsych) {
-    this.jsPsych = jsPsych;
+    this.jsPsych = jsPsych; // Store the jsPsych instance
+    this.trialCount = 0; // Track completed trials
+    this.totalTrials = 0; // Total number of trials
   }
 
-  trial(display_element, trial) {
-    // Display the author name
-    display_element.innerHTML = display_element.innerHTML = `
-      <div style="
-        font-size: 24px;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-      ">
-        ${trial.author_name}
-      </div>
-    `;
+  setTotalTrials(total) {
+    this.totalTrials = total; // Set the total number of trials
+  }
 
-    // Set up response object
-    let response = {
-      rt: null,
-      key: null,
-      accuracy: null,
-    };
-
-    // Define valid keys
-    const valid_keys = ["f", "j"];
+  trial(scene, trial, onComplete) {
+    // Display the author name using Phaser
+    const authorText = scene.add.text(400, 300, trial.author_name, {
+      fontSize: "32px",
+      color: "#ffffff",
+      fontStyle: "bold",
+      align: "center",
+    }).setOrigin(0.5);
 
     // Handle keyboard responses
-    const keyboardListener = this.jsPsych.pluginAPI.getKeyboardResponse({
-      callback_function: (info) => {
-        response.rt = info.rt;
-        response.key = info.key;
+    const startTime = Date.now();
+    const validKeys = ["f", "j"];
+    const handleKeyPress = (event) => {
+      if (validKeys.includes(event.key)) {
+        // Stop listening for input
+        scene.input.keyboard.off("keydown", handleKeyPress);
 
-        // Compute accuracy
-        if (info.key === "f") {
-          response.accuracy = trial.is_true_author ? 1 : -1;
-        } else if (info.key === "j") {
-          response.accuracy = 0;
+        // Compute response data
+        const response = {
+          rt: Date.now() - startTime,
+          key: event.key,
+          accuracy: event.key === "f" ? (trial.is_true_author ? 1 : -1) : 0,
+        };
+
+        // Push trial data directly to jsPsych
+        this.jsPsych.data.get().push({
+          author_name: trial.author_name,
+          is_true_author: trial.is_true_author,
+          rt: response.rt,
+          key: response.key,
+          accuracy: response.accuracy,
+        });
+
+        // Remove author text
+        authorText.destroy();
+
+        // Trigger callback to end trial
+        if (onComplete) {
+          onComplete(response);
         }
-
-        // End the trial
-        this.endTrial(display_element, trial, response, keyboardListener);
-      },
-      valid_responses: valid_keys,
-      rt_method: "performance",
-      persist: false,
-      allow_held_key: false,
-    });
-  }
-
-  endTrial(display_element, trial, response, keyboardListener) {
-    // Cancel keyboard listener
-    this.jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
-
-    // Clear display
-    display_element.innerHTML = "";
-
-    // Package trial data
-    const trial_data = {
-      rt: response.rt,
-      key: response.key,
-      accuracy: response.accuracy,
-      author_name: trial.author_name,
-      is_true_author: trial.is_true_author,
+      }
     };
 
-    // Finish the trial
-    this.jsPsych.finishTrial(trial_data);
+    // Listen for key presses
+    scene.input.keyboard.on("keydown", handleKeyPress);
+  }
+
+  saveData(filename = "author_recognition_data.csv") {
+    // Save all data to a CSV file
+    this.jsPsych.data.get().localSave("csv", filename);
+    console.log(`Data saved as ${filename}`);
   }
 }
 
