@@ -7,39 +7,72 @@ export default class InstructionScene extends Phaser.Scene {
 
   preload() {
     // Load background and welcome images
-    this.load.image("background", "assets/images/library.jpg");
+    this.load.image("background", "assets/images/library.png");
     this.load.image("welcome", "assets/images/welcome.png");
   }
 
   create() {
     // Add background and welcome image
-    this.add.image(400, 300, "background").setScale(1);
-    const welcomeImage = this.add.image(400, 250, "welcome");
+    const { width, height } = this.sys.game.config;
 
-    // Create the START button
+    // Add and position the background to cover the entire screen
+    this.add.image(width / 2, height / 2, "background")
+      .setScale(0.25) // Scale proportionally to fit screen
+      .setScrollFactor(0); // Prevent it from moving if the camera pans
+
+    // Add and center the welcome image dynamically
+    const welcomeImage = this.add.image(width / 2, height / 2.5, "welcome").setScale(0.6);
+
+    const startButtonWidth = 200;
+    const startButtonHeight = 60;
+    const startButton = this.add.rectangle(
+      width / 2, 
+      height / 1.35, 
+      startButtonWidth, 
+      startButtonHeight
+    ).setInteractive({ useHandCursor: true });
+
+    // Use a graphics object to style the rectangle
     const graphics = this.add.graphics();
-    graphics.fillStyle(0x4CAF50, 1); // Button color: green
-    graphics.fillRoundedRect(300, 350, 200, 60, 15); // Draw rounded rectangle
+    graphics.fillStyle(0x4CAF50, 1); // Default green color
+    graphics.fillRoundedRect(
+      width / 2 - startButtonWidth / 2, // Align left edge of the rectangle
+      height / 1.35 - startButtonHeight / 2, // Align top edge of the rectangle
+      startButtonWidth,
+      startButtonHeight,
+      15 // Rounded corners radius
+    );
 
-    const startButtonText = this.add.text(400, 380, "START", {
+    // Add the START button text and position it dynamically
+    const startButtonText = this.add.text(width / 2, height / 1.35, "START", {
       fontSize: "24px",
       color: "#fff",
       fontStyle: "bold",
-    }).setOrigin(0.5);
-
-    const startButton = this.add.rectangle(400, 380, 200, 60).setInteractive({ useHandCursor: true });
+    }).setOrigin(0.5); // Center the text
 
     // START button hover effects
     startButton.on("pointerover", () => {
       graphics.clear();
-      graphics.fillStyle(0x45a049, 1); // Change color to brighter green
-      graphics.fillRoundedRect(300, 350, 200, 60, 15);
+      graphics.fillStyle(0x45a049, 1); // Brighter green on hover
+      graphics.fillRoundedRect(
+        width / 2 - startButtonWidth / 2,
+        height / 1.35 - startButtonHeight / 2,
+        startButtonWidth,
+        startButtonHeight,
+        15
+      );
     });
 
     startButton.on("pointerout", () => {
       graphics.clear();
       graphics.fillStyle(0x4CAF50, 1); // Restore default color
-      graphics.fillRoundedRect(300, 350, 200, 60, 15);
+      graphics.fillRoundedRect(
+        width / 2 - startButtonWidth / 2,
+        height / 1.35 - startButtonHeight / 2,
+        startButtonWidth,
+        startButtonHeight,
+        15
+      );
     });
 
     // START button click event: transition to instructions
@@ -51,79 +84,56 @@ export default class InstructionScene extends Phaser.Scene {
       graphics.setVisible(false);
       startButtonText.setVisible(false);
 
-      // Create the instruction dialog box
+      const dialogBoxWidth = width * 0.7; // Set the dialog box to 80% of the screen width
+      const dialogBoxHeight = height * 0.65; // Set the dialog box to 50% of the screen height
+      const dialogBoxX = (width - dialogBoxWidth) / 2; // Center horizontally
+      const dialogBoxY = (height - dialogBoxHeight) / 2; // Center vertically
+
       const dialogBox = this.add.graphics();
       dialogBox.fillStyle(0x000000, 0.8); // Semi-transparent black background
-      dialogBox.fillRoundedRect(50, 100, 700, 400, 15);
+      dialogBox.fillRoundedRect(dialogBoxX, dialogBoxY, dialogBoxWidth, dialogBoxHeight, 15);
 
-      const dialogText = this.add.text(70, 120, "", {
-        fontSize: "18px",
-        color: "#ffffff",
-        wordWrap: { width: 660 },
-      });
-
-      // Instructions text
-      const instructions = [
-        "",
-        "In this challenge, you will see a bunch of names down the page. Some of them are authors of books, and some of them are not.",
-        "",
-        "Your task is to identify the real author names from the fictitious names as precisely and quickly as possible.",
-        "",
-        "Press the 'F' key for names that you KNOW FOR SURE are authors;",
-        "Press the 'J' key if you don't recognize the name.",
-        "",
-        "You should only press 'F' for those names about which you are ABSOLUTELY CERTAIN or else you will lose a point.",
-        "",
-        "Press CONTINUE to begin the challenge.",
-      ];
-
-      let currentLineIndex = 0;
-      let currentCharIndex = 0;
-      let currentText = ""; // The text currently displayed in the dialog
-
-      // Function to type the next character
-      const typeNextCharacter = () => {
-        if (currentLineIndex >= instructions.length) {
-          // Show the CONTINUE button when all lines are typed
-          showContinueButton();
-          return;
-        }
-
-        const line = instructions[currentLineIndex];
-        if (currentCharIndex < line.length) {
-          // Add the next character to the text
-          currentText += line[currentCharIndex];
-          dialogText.setText(currentText);
-          currentCharIndex++;
-        } else {
-          // Move to the next line
-          currentText += "\n";
-          dialogText.setText(currentText);
-          currentCharIndex = 0;
-          currentLineIndex++;
-        }
-      };
-
-      // Function to show the CONTINUE button
-      const showContinueButton = () => {
-        const continueButton = this.add.text(400, 430, "CONTINUE", {
+      // Add the instruction text inside the dialog box
+      const padding = 30; // Padding inside the dialog box
+      const dialogText = this.add.text(
+        dialogBoxX + padding,
+        dialogBoxY + padding,
+        [
+          "In this challenge, you will see a bunch of names down the page. Some of them are authors of books, and some of them are not.",
+          "",
+          "Your task is to identify the real author names from the fictitious names as precisely and quickly as possible.",
+          "",
+          "Press the 'F' key for names that you KNOW FOR SURE are authors;",
+          "Press the 'J' key if you don't recognize the name.",
+          "",
+          "You should only press 'F' for those names about which you are ABSOLUTELY CERTAIN or else you will lose a point.",
+          "",
+          "Press CONTINUE to begin the challenge.",
+        ].join("\n"),
+        {
           fontSize: "24px",
           color: "#ffffff",
+          wordWrap: { width: dialogBoxWidth - 2 * padding },
+        }
+      );
+
+      // Show the CONTINUE button below the dialog box
+      const continueButton = this.add.text(
+        width / 2, 
+        dialogBoxY + dialogBoxHeight - 2*padding, 
+        "CONTINUE", 
+        {
+          fontSize: "26px",
+          color: "#ffffff",
           backgroundColor: "#4CAF50",
-          padding: { x: 10, y: 5 },
-        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+          padding: { x: 20, y: 10 },
+        }
+      )
+        .setOrigin(0.5)
+        .setInteractive({ useHandCursor: true });
 
-        continueButton.on("pointerdown", () => {
-          this.scene.start("TrialScene"); // Transition to TrialScene
-        });
-      };
-
-      // Add a timed event to type each character
-      this.time.addEvent({
-        delay: 30, // Typing speed: 10ms per character
-        callback: typeNextCharacter,
-        callbackScope: this,
-        loop: true,
+      continueButton.on("pointerdown", () => {
+        this.scene.start("TrialScene"); // Transition to TrialScene
       });
     });
   }
