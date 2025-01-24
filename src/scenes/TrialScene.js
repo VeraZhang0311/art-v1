@@ -16,6 +16,7 @@ export default class TrialScene extends Phaser.Scene {
     this.load.image("book4", "assets/images/book4.jpg");
     this.load.image("book5", "assets/images/book5.jpg");
     this.load.image("book6", "assets/images/book6.png");
+    this.load.image("fjkeys", "assets/images/fjkeys.png");
   }
 
   create() {
@@ -26,7 +27,14 @@ export default class TrialScene extends Phaser.Scene {
     const artPlugin = new AuthorRecognitionPlugin(jsPsych);
 
     // Background
-    this.add.image(400, 300, "background").setScale(1);
+    const { width, height } = this.sys.game.config;
+    this.add.image(width / 2, height / 2, "background")
+      .setAlpha(0.5) // Set transparency (50% opacity)
+      .setScale(0.25) // Scale proportionally to fit screen
+      .setScrollFactor(0); // Prevent it from moving if the camera pans
+
+    this.add.image(width / 2, height * 0.75, "fjkeys")
+      .setScale(0.3);
 
     // Timer and Score
     this.timerValue = 0;
