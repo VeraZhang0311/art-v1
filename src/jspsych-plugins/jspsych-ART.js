@@ -25,8 +25,9 @@ class AuthorRecognitionPlugin {
 
   trial(scene, trial, onComplete) {
     // Display the author name using Phaser
-    const authorText = scene.add.text(400, 300, trial.author_name, {
-      fontSize: "32px",
+    const { width, height } = scene.sys.game.config; 
+    const authorText = scene.add.text(width / 2, height / 2.5, trial.author_name, {
+      fontSize: "34px",
       color: "#ffffff",
       fontStyle: "bold",
       align: "center",

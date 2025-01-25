@@ -17,28 +17,37 @@ export default class EndScene extends Phaser.Scene {
   }
 
   create() {
+    const { width, height } = this.sys.game.config;
+
     // Background
-    this.add.image(400, 300, "background").setScale(1);
+    this.add.image(width / 2, height / 2, "background")
+      .setAlpha(0.5) // Set transparency (50% opacity)
+      .setScale(0.25) // Scale proportionally to fit screen
+      .setScrollFactor(0); // Prevent it from moving if the camera pans
 
     // Gray frame (box)
+    const boxWidth = width * 0.6;
+    const boxHeight = height * 0.7;
+    const boxX = width / 2 - boxWidth / 2;
+    const boxY = height / 2 - boxHeight / 2;
     const box = this.add.graphics();
     box.fillStyle(0x000000, 0.8); // Light gray with slight transparency
-    box.fillRoundedRect(100, 100, 600, 400, 15); // Position, size, and rounded corners
+    box.fillRoundedRect(boxX, boxY, boxWidth, boxHeight, 15); // Position, size, and rounded corners
 
     // Title
-    this.add.text(400, 150, "Results", {
+    this.add.text(width / 2, height * 0.3, "Results", {
       fontSize: "36px",
       color: "#f2e02c",
       fontStyle: "bold",
     }).setOrigin(0.5);
 
     // Display Final Time and Score
-    this.add.text(400, 220, `Time: ${this.finalTime}s`, {
+    this.add.text(width / 2, height * 0.4, `Time: ${this.finalTime}s`, {
       fontSize: "28px",
       color: "#f2e02c",
     }).setOrigin(0.5);
 
-    this.add.text(400, 260, `Score: ${this.finalScore}`, {
+    this.add.text(width / 2, height * 0.45, `Score: ${this.finalScore}`, {
       fontSize: "28px",
       color: "#f2e02c",
     }).setOrigin(0.5);
@@ -54,15 +63,15 @@ export default class EndScene extends Phaser.Scene {
     }
 
     // Display the message
-    this.add.text(400, 330, message, {
+    this.add.text(width / 2, height * 0.5, message, {
       fontSize: "24px",
       color: "#45A049",
       align: "center",
-      wordWrap: { width: 500 },
+      wordWrap: { width: width * 0.7 },
     }).setOrigin(0.5);
 
     // Add a Restart Button
-    const restartButton = this.add.text(400, 410, "Restart", {
+    const restartButton = this.add.text(width / 2, height * 0.7, "Restart", {
       fontSize: "28px",
       color: "#ffffff",
       backgroundColor: "#4CAF50",
