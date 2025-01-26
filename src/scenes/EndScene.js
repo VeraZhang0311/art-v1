@@ -62,7 +62,6 @@ export default class EndScene extends Phaser.Scene {
     // Exit button interaction
     exitButton.on("pointerdown", () => {
       this.scene.start("BlankScene"); // Transition to BlankScene
-    });
-    
+    });  
   }
 }
