@@ -47,6 +47,22 @@ export default class EndScene extends Phaser.Scene {
     const randomCardKey = Phaser.Utils.Array.GetRandom(this.funFactCards);
 
     // Display the random fun fact card
-    this.add.image(width / 2, height / 2, randomCardKey);
+    this.add.image(width / 2, height / 2.2, randomCardKey);
+
+    // Add Exit Button
+    const exitButton = this.add.text(width / 2, height * 0.85, "Exit", {
+      fontSize: "28px",
+      color: "#ffffff",
+      backgroundColor: "#ff4d4d", // Red background for the button
+      padding: { x: 20, y: 10 },
+    })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+
+    // Exit button interaction
+    exitButton.on("pointerdown", () => {
+      this.scene.start("BlankScene"); // Transition to BlankScene
+    });
+    
   }
 }
