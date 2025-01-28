@@ -22,9 +22,6 @@ export default class EndScene extends Phaser.Scene {
         "woolf",
       ];
     
-      // Preload the background image
-      this.load.image("background", "assets/images/library.jpg");
-    
       // Preload all fun fact cards
       funFactCards.forEach((card) => {
         this.load.image(card, `assets/images/funfacts/${card}.png`);
