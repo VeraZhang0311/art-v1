@@ -9,11 +9,17 @@ export default class InstructionScene extends Phaser.Scene {
     // Load background and welcome images
     this.load.image("background", "assets/images/library.png");
     this.load.image("welcome", "assets/images/welcome.png");
+
+    // Load button click sound
+    this.load.audio("click", "assets/sounds/click.mp3");
   }
 
   create() {
     // Add background and welcome image
     const { width, height } = this.sys.game.config;
+
+    // Add sound effect
+    this.sound.add("click");
 
     // Add and position the background to cover the entire screen
     this.add.image(width / 2, height / 2, "background")
@@ -77,6 +83,9 @@ export default class InstructionScene extends Phaser.Scene {
 
     // START button click event: transition to instructions
     startButton.on("pointerdown", () => {
+      // Play the click sound
+      this.sound.play("click"); 
+
       // Hide welcome screen elements
       welcomeImage.setVisible(false);
       startButton.setVisible(false);
@@ -133,6 +142,7 @@ export default class InstructionScene extends Phaser.Scene {
         .setInteractive({ useHandCursor: true });
 
       continueButton.on("pointerdown", () => {
+        this.sound.play("click"); // Play the click sound
         this.scene.start("TrialScene"); // Transition to TrialScene
       });
     });

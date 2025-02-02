@@ -17,6 +17,11 @@ export default class TrialScene extends Phaser.Scene {
     this.load.image("book5", "assets/images/book5.jpg");
     this.load.image("book6", "assets/images/book6.png");
     this.load.image("fjkeys", "assets/images/fjkeys.png");
+
+    // Preload sound effects
+    this.load.audio("correct", "assets/sounds/correct.mp3");
+    this.load.audio("wrong", "assets/sounds/wrong.mp3");
+    this.load.audio("hmm", "assets/sounds/hmm.mp3");
   }
 
   create() {
@@ -25,6 +30,11 @@ export default class TrialScene extends Phaser.Scene {
 
     // Pass jsPsych explicitly to the plugin
     const artPlugin = new AuthorRecognitionPlugin(jsPsych);
+
+    // Sound Effects
+    this.sound.add("correct");
+    this.sound.add("wrong");
+    this.sound.add("hmm");
 
     // Background
     const { width, height } = this.sys.game.config;
@@ -41,20 +51,20 @@ export default class TrialScene extends Phaser.Scene {
       { author_name: 'George Orwell', is_true_author: true },
       { author_name: 'A.C. Kelly', is_true_author: false },
       { author_name: 'Nora Ephron', is_true_author: true },
-      // { author_name: 'Frederick Mundow', is_true_author: false },
-      // { author_name: 'Nelson DeMille', is_true_author: true },
-      // { author_name: 'Jane Austen', is_true_author: true },
-      // { author_name: 'Jay Peter Holmes', is_true_author: false },
-      // { author_name: 'I.K. Nachbar', is_true_author: false },
-      // { author_name: 'Geoffrey Pritchett', is_true_author: false },
-      // { author_name: 'Larry Applegate', is_true_author: false },
-      // { author_name: 'Stephen Houston', is_true_author: false },
-      // { author_name: 'Virginia Woolf', is_true_author: true },
-      // { author_name: 'Amy Graham', is_true_author: false },
-      // { author_name: 'James Michener', is_true_author: true },
-      // { author_name: 'Cameron McGrath', is_true_author: false },
-      // { author_name: 'John Landau', is_true_author: false },
-      // { author_name: 'Saul Bellow', is_true_author: true },
+      { author_name: 'Frederick Mundow', is_true_author: false },
+      { author_name: 'Nelson DeMille', is_true_author: true },
+      { author_name: 'Jane Austen', is_true_author: true },
+      { author_name: 'Jay Peter Holmes', is_true_author: false },
+      { author_name: 'I.K. Nachbar', is_true_author: false },
+      { author_name: 'Geoffrey Pritchett', is_true_author: false },
+      { author_name: 'Larry Applegate', is_true_author: false },
+      { author_name: 'Stephen Houston', is_true_author: false },
+      { author_name: 'Virginia Woolf', is_true_author: true },
+      { author_name: 'Amy Graham', is_true_author: false },
+      { author_name: 'James Michener', is_true_author: true },
+      { author_name: 'Cameron McGrath', is_true_author: false },
+      { author_name: 'John Landau', is_true_author: false },
+      { author_name: 'Saul Bellow', is_true_author: true },
       // { author_name: 'F. Scott Fitzgerald', is_true_author: true },
       // { author_name: 'Rick Riordan', is_true_author: true },
       // { author_name: 'Robert Ludlum', is_true_author: true },

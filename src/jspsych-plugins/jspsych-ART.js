@@ -24,15 +24,16 @@ class AuthorRecognitionPlugin {
   }
 
   trial(scene, trial, onComplete) {
-    // Display the author name using Phaser
-    const { width, height } = scene.sys.game.config; 
+    const { width, height } = scene.sys.game.config;
+  
+    // Display author name
     const authorText = scene.add.text(width / 2, height / 2.5, trial.author_name, {
       fontSize: "34px",
       color: "#ffffff",
       fontStyle: "bold",
       align: "center",
     }).setOrigin(0.5);
-
+  
     // Handle keyboard responses
     const startTime = Date.now();
     const validKeys = ["f", "j"];
@@ -40,15 +41,30 @@ class AuthorRecognitionPlugin {
       if (validKeys.includes(event.key)) {
         // Stop listening for input
         scene.input.keyboard.off("keydown", handleKeyPress);
+  
+        // Determine which sound to play
+        let soundKey = "hmm"; // Default for "J"
+        if (event.key === "f") {
+          soundKey = trial.is_true_author ? "correct" : "wrong";
+        }
+  
+        // Play preloaded sound from TrialScene
+        if (scene.sound && scene.sound.get(soundKey)) {
+          const volume = soundKey === "hmm" ? 10.0 : 1.0; // Increase "hmm" volume by 50%
+          scene.sound.play(soundKey, { volume: volume });
+        } else {
+          console.warn(`Sound ${soundKey} not found!`);
+        }
 
+  
         // Compute response data
         const response = {
           rt: Date.now() - startTime,
           key: event.key,
           accuracy: event.key === "f" ? (trial.is_true_author ? 1 : -1) : 0,
         };
-
-        // Push trial data directly to jsPsych
+  
+        // Push trial data to jsPsych
         this.jsPsych.data.get().push({
           author_name: trial.author_name,
           is_true_author: trial.is_true_author,
@@ -56,20 +72,21 @@ class AuthorRecognitionPlugin {
           key: response.key,
           accuracy: response.accuracy,
         });
-
+  
         // Remove author text
         authorText.destroy();
-
+  
         // Trigger callback to end trial
         if (onComplete) {
           onComplete(response);
         }
       }
     };
-
+  
     // Listen for key presses
     scene.input.keyboard.on("keydown", handleKeyPress);
   }
+  
 
   saveData(filename = "author_recognition_data.csv") {
     // Save all data to a CSV file
